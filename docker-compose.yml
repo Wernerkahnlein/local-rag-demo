@@ -1,0 +1,25 @@
+services:
+  summary_analyzer:
+    build: 
+      context: .
+      dockerfile: sm.Dockerfile
+    volumes:
+      - /mnt/c/Users/Mati/Desktop/dev/summaries:/summaries:ro
+    networks:
+      - shared
+    depends_on:
+      - llama
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    volumes:
+      - ./models:/models:rw
+    entrypoint: /app/llama-server
+    command: -m /models/mistral-7b-instruct-v0.1.Q8_0.gguf -n 512 --port 8080
+    ports:
+      - 8080:8080
+    networks:
+      - shared
+
+networks:
+  shared:
+    driver: bridge

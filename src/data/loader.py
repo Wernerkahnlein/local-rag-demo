@@ -90,7 +90,6 @@ class Loader:
             
         return embedded_billing_data
 
-    # TODO: refactor this to get the embedding list dynamically, separate this to be its own job callable by command
     def load(self):
         galicia_data = self.manage_galicia_summaries()
         bbva_data = self.manage_bbva_summaries()

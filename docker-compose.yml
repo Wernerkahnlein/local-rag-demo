@@ -18,6 +18,7 @@ services:
       dockerfile: loader.Dockerfile
     volumes:
       - /mnt/c/Users/Mati/Desktop/dev/summaries:/summaries:ro
+      - /mnt/c/Users/Mati/Desktop/dev/pdfs:/pdfs:ro
     networks:
       - shared
     environment:

@@ -13,6 +13,13 @@ curl http://localhost:8082/talk/ \
   -d '{"content":"Whats the sum of all balances only for banco bbva in pesos, explain your reasoning"}' \
   -H "Content-Type: application/json"
 
+curl  -X POST \
+'http://localhost:6333/collections/pdf_chunks/points/count' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+"exact": true
+}'
+
 curl  -X DELETE \
   'http://localhost:6333/collections/default' 
 
@@ -24,9 +31,27 @@ curl  -X POST \
   --header 'Content-Type: application/json' \
   --data-raw '{
   "points": [
-    "103e07e3-1c67-b924-0939-fc7fd2bbad65",
-    "4cda2729-2a8b-ab61-093a-00015a767037",
-    "77199e2a-286d-b67a-8696-6ce7fbff843d"
+    "2d6d6899-f311-ab62-52f0-658e827c9ba5",
+    "81f4abe2-05ee-7d89-c47a-f337569a29c1",
+    "97458ba2-3969-bb1a-223b-ef3ac3aebafe",
+    "d4415c9d-48be-ca6f-8c53-12e1b700f373",
+    "eeae4259-309a-625c-89d5-245515c4ae7c"
+  ]
+}'
+
+curl  -X POST \
+  'http://localhost:6333/collections/pdf_chunks/points/delete' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "points": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
   ]
 }'
 

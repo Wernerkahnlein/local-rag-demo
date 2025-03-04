@@ -5,6 +5,7 @@ summaries/
 *.deb
 qdrant/
 !src/qdrant
+commands.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

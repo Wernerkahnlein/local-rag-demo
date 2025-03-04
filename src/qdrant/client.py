@@ -45,3 +45,9 @@ class QdrantManager:
             )
         
         return False
+    
+    def recreate_collection(self, name: str, vector_params: VectorParams = VectorParams(size=1024, distance=Distance.COSINE)) -> bool:
+        return self.client.recreate_collection(
+                collection_name=name,
+                vectors_config=vector_params,
+            )

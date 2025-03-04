@@ -26,7 +26,7 @@ async def talk(message: Message):
         context = ""
         query_embeddings = loader.embed(query)
         for _, query_embedding in enumerate(query_embeddings):
-            documents = qdrant.retrieve_documents(query_embedding=query_embedding, top_k=3, collection_name="pdf_chunks")
+            documents = qdrant.retrieve_documents(query_embedding=query_embedding, top_k=10, collection_name="pdf_chunks")
             for _, documents in enumerate(documents):
                 context += f"{documents}\n"
         prompt = get_default_prompt(context=context, query=query)

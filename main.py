@@ -1,40 +1,36 @@
-import pymupdf
-import fitz
-import requests
-import json
-import re
-from pathlib import Path
+import os
 
-summaries = Path("/summaries")
-url = "http://llama:8080/completion"
-headers = {
-    'Content-Type': 'application/json'
-}
+from src.manage.prompts import get_default_prompt, get_default_system_prompt
+from src.manage.talker import Talker
+from src.qdrant.client import QdrantManager
+from src.data.loader import Loader
+from src.api.models import Message
+from fastapi import FastAPI
 
-for summary in summaries.iterdir():
-    doc = pymupdf.open(summary.absolute())
+app = FastAPI()
 
-    page = doc[0]
+@app.post("/talk/")
+async def talk(message: Message):
+    talker = Talker()
+    message_data = message.dict()
 
-    content = page.get_text(option="text")
+    if message_data.get("content") is None:
+        return {"body": "missing message content"}
 
-    # payload = {
-    #     "model": "PDFai-Llama-3.1",
-    #     "messages": [
-    #         {
-    #             "role": "user",
-    #             "content": content
-    #         }
-    #     ]
-    # }
-
-    payload = {
-        "prompt": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>Answer the user's question in as much detail as possible. Be witty and precise but don't answer incorrectly!" +
-        "<|eot_id|><|start_header_id|>user<|end_header_id|>How do you split an atom?<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
-    }
-
-    response = requests.post(url, json=payload, headers=headers)
-    print(response.json())
-    break
-
-
+    if os.environ.get("ENV") != "local":
+        qdrant = QdrantManager()
+        loader = Loader(qdrant=qdrant)
+    
+        query = message_data.get("content")
+        context = ""
+        query_embeddings = loader.embed(query)
+        for _, query_embedding in enumerate(query_embeddings):
+            documents = qdrant.retrieve_documents(query_embedding=query_embedding, top_k=5)
+            for _, documents in enumerate(documents):
+                context += f"{documents}\n"
+        prompt = get_default_prompt(context=context, query=query)
+        print(prompt)
+        system_prompt = get_default_system_prompt()
+        return talker.call_chat_completions(system_prompt=system_prompt, prompt=prompt)
+    else:
+        return {"body": "local"}

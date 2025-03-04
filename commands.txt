@@ -1,0 +1,53 @@
+curl  -X POST \
+  'http://localhost:6333/collections/default/points/scroll' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{}'
+
+curl  -X DELETE \
+  'http://localhost:6333/collections/default'
+
+curl  -X GET \
+  'http://localhost:6333/collections/default'
+
+curl http://localhost:8082/talk/ \
+  -d '{"content":"Whats the sum of all balances only for banco bbva in pesos, explain your reasoning"}' \
+  -H "Content-Type: application/json"
+
+curl  -X DELETE \
+  'http://localhost:6333/collections/default' 
+
+
+# Delete points by IDs
+curl  -X POST \
+  'http://localhost:6333/collections/default/points/delete' \
+  --header 'api-key: <api-key-value>' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "points": [
+    "103e07e3-1c67-b924-0939-fc7fd2bbad65",
+    "4cda2729-2a8b-ab61-093a-00015a767037",
+    "77199e2a-286d-b67a-8696-6ce7fbff843d"
+  ]
+}'
+
+# Delete points by filter 
+curl  -X POST \
+  'http://localhost:6333/collections/collection_name/points/delete' \
+  --header 'api-key: <api-key-value>' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "filter": {
+    "must": [
+      {
+        "key": "color",
+        "match": {
+          "value": "red"
+        }
+      }
+    ]
+  }
+}'
+
+
+docker run --rm -v /path/to/local/dir:/data ghcr.io/ggml-org/llama.cpp:full python3 /llama.cpp/convert.py /data/model.f16 --outfile /data/model.gguf
+

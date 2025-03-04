@@ -1,3 +1,6 @@
 .venv/
-models/
+llm/
 summaries/
+*.gguf
+*.deb
+qdrant/

@@ -69,9 +69,12 @@ Simple embedding server endpoint using Llama.cpp, the model I'm currently using 
 Simple fast api endpoint to interface with the embedder and chatter services
 
 ### Example usage
-- Change the loader.py file with the path were you PDF is stored,  I'll change this soon to pass it as a command
+- Change the docker-compose file for the loader volume mount and command with the path where your PDF is stored
 ```
-loader.load_pdf("/pdfs/resistance_training_movement_pattern.pdf")
+command:
+  - python
+  - loader.py
+  - --path /pdfs/resistance_training_movement_pattern.pdf
 ```
 - Start services
 ```
@@ -133,4 +136,5 @@ I got as reponse
 ```
 
 ## TODOs
-- Parse LLM response better
+- Parse LLM response
+- Add nuke cli command to delete all points in a collection

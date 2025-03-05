@@ -1,7 +1,10 @@
 import requests
 import os
-from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
+import logging
+from jinja2 import Environment, select_autoescape, FileSystemLoader
 
+logger = logging.getLogger(__name__)
+logger.setLevel(os.environ.get("LOG_LEVEL", "INFO"))
 
 class Talker:
 
@@ -15,13 +18,12 @@ class Talker:
         
 
     def call_llama_completion(self, payload: str):
-
             headers = {
                 'Content-Type': 'application/json'
             }
 
             response = requests.post(f"{self.url}/completion", json=payload, headers=headers)
-            print(response.json())
+            logger.info(response.json())
             return response.status_code
 
 
@@ -34,7 +36,6 @@ class Talker:
                     }
                 ]
             )
-
             payload = {
                 "model": model,
                 "messages": [
@@ -42,12 +43,11 @@ class Talker:
                     {"role": "user", "content": rendered_template}
                 ]
             }
-
             headers = {
                 'Content-Type': 'application/json'
             }
 
-            print(payload)
+            logger.info(payload)
 
             response = requests.post(f"{self.llama_chatter_url}/v1/chat/completions", json=payload, headers=headers)
             return response.json()

@@ -1,6 +1,7 @@
 import os
 import time
 import logging
+import argparse
 from src.qdrant.client import QdrantManager
 from src.data.loader import Loader
 from src.exceptions.common import LoadException
@@ -10,10 +11,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(os.environ.get("LOG_LEVEL", "INFO"))
 
 
-def load():
+def load_bank_data(args: any):
     logger.info("Attempting file upload to Qdrant")
-    retries = int(os.environ.get("LOADER_RETRY_MAX_ATTEMPTS", 3))
-    wait = int(os.environ.get("LOADER_RETRY_WAIT", 2))
+    retries = args["max-attempts"]
+    wait = args["attempt-wait"]
     for i in range(retries):
         if i == retries:
             logger.error("Max attempts reached, exiting...")
@@ -21,8 +22,28 @@ def load():
         try:
             qdrant = QdrantManager()
             loader = Loader(qdrant=qdrant)
-            # loader.load_summaries()
-            loader.load_pdf("/pdfs/resistance_training_movement_pattern.pdf")
+            loader.load_summaries()
+            break
+        except LoadException as le:
+            logger.error(f"Upstream error occurred when attempting to load files to Qdrant {str(le)}")
+            time.sleep(wait)
+        except Exception as e:
+            logger.error(f"Unknown error occurred when attempting to load files to Qdrant {str(e)}")
+            time.sleep(wait)
+
+
+def load_pdf_data(args: any):
+    logger.info("Attempting file upload to Qdrant")
+    retries = args["max-attempts"]
+    wait = args["attempt-wait"]
+    for i in range(retries):
+        if i == retries:
+            logger.error("Max attempts reached, exiting...")
+            return
+        try:
+            qdrant = QdrantManager()
+            loader = Loader(qdrant=qdrant)
+            loader.load_pdf(args.path)
             break
         except LoadException as le:
             logger.error(f"Upstream error occurred when attempting to load files to Qdrant {str(le)}")
@@ -32,4 +53,26 @@ def load():
 
 
 if __name__ == "__main__":
-    load()
+    argparser = argparse.ArgumentParser(
+        prog="loader",
+        description="CLI tool to embed and load data into Qdrant"
+    )
+    subparsers = argparser.add_subparsers(help='subcommand help')
+
+    parser_load = subparsers.add_parser(name="pdf_load", help="Command to load a single PDF content into Qdrant")
+    parser_load.add_argument("--path", "-p", type=str, required=True)
+    parser_load.add_argument("--max-attempts", type=int, default=3)
+    parser_load.add_argument("--attempt-wait", type=int, default=3)
+    parser_load.set_defaults(func=load_pdf_data)
+
+    parser_bank = subparsers.add_parser(name="bank_data_load", help="Command to load bank statement data from Galicia or BBVA into Qdrant")
+    parser_bank.add_argument("--path", "-p", type=str, required=True)
+    parser_bank.add_argument("--max-attempts", type=int, default=3)
+    parser_bank.add_argument("--attempt-wait", type=int, default=3)
+    parser_bank.add_argument("--path", "-p", type=str)
+    parser_bank.set_defaults(func=load_bank_data)
+
+    args = argparser.parse_args()
+    args.func(args)
+
+

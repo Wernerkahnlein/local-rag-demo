@@ -16,6 +16,10 @@ services:
     build: 
       context: .
       dockerfile: loader.Dockerfile
+    command:
+      - python
+      - loader.py
+      - --path /pdfs/resistance_training_movement_pattern.pdf
     volumes:
       - /mnt/c/Users/Mati/Desktop/dev/summaries:/summaries:ro
       - /mnt/c/Users/Mati/Desktop/dev/pdfs:/pdfs:ro

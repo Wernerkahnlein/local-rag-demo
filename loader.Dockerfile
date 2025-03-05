@@ -18,4 +18,4 @@ RUN pip install --user --no-cache-dir -r /app/requirements.txt
 
 ENV PATH="/home/nonroot/.local/bin:${PATH}"
 
-ENTRYPOINT [ "python", "loader.py"]
+CMD [ "python", "loader.py", "-h"]

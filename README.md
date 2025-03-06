@@ -137,4 +137,4 @@ I got as reponse
 
 ## TODOs
 - Parse LLM response
-- Add nuke cli command to delete all points in a collection
+- Optimize RAG prompt

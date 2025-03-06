@@ -113,6 +113,7 @@ class Loader:
             logger.error(f"Unknown error occurred when parsing BBVA files: {str(e)}")
             raise BBVAParsingException
 
+
     def load_summaries(self):
         try: 
             galicia_data = self._manage_galicia_summaries()
@@ -146,7 +147,8 @@ class Loader:
         except Exception as e:
             logger.error(f"Unknown error: {str(e)}")
             raise Exception
-        
+
+
     def load_pdf(self, path: str):
         try:
             collection_name = "pdf_chunks"

@@ -43,11 +43,16 @@ class QdrantManager:
                 collection_name=name,
                 vectors_config=vector_params,
             )
-        
         return False
     
-    def recreate_collection(self, name: str, vector_params: VectorParams = VectorParams(size=1024, distance=Distance.COSINE)) -> bool:
+    def recreate_collection(self, collection_name: str, vector_params: VectorParams = VectorParams(size=1024, distance=Distance.COSINE)) -> bool:
         return self.client.recreate_collection(
-                collection_name=name,
-                vectors_config=vector_params,
-            )
+            collection_name=collection_name,
+            vectors_config=vector_params,
+        )
+    
+    def delete_collection(self, collection_name: str, timeout: int = 60) -> bool:
+        return self.client.delete_collection(
+            collection_name=collection_name,
+            timeout=timeout,
+        )
